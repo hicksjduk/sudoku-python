@@ -5,7 +5,7 @@ This repo contains a simple solver for Sudoku puzzles, written in Python.
 To run the solver, run the `sudoku.py` file. This solves the puzzle [which was 
 claimed in 2012 to be the hardest Sudoku ever devised](https://abcnews.go.com/blogs/headlines/2012/06/can-you-solve-the-hardest-ever-sudoku).
 
-Alternatively, the `solve` function can be invoked on any puzzle, which is represented by 
+Alternatively, the `solve` function can be invoked on any puzzle, which is represented by a
 list of lists of integers.
 The input puzzle is not validated, but is assumed to fulfil the following criteria:
 
