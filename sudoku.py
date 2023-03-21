@@ -15,8 +15,8 @@ def calcBoxSize():
 
 def calcBoxes():
     boxRows, boxCols = calcBoxSize()
-    boxTopCorners = [(row, col) for row in range(0, gridSize, boxRows)
-                     for col in range(0, gridSize, boxCols)]
+    boxTopCorners = ((row, col) for row in range(0, gridSize, boxRows)
+                     for col in range(0, gridSize, boxCols))
     return [((topRow, leftCol), (topRow + boxRows, leftCol + boxCols))
             for topRow, leftCol in boxTopCorners]
 
@@ -51,8 +51,18 @@ def setValueAt(grid, square, value):
     return replaceValueAt(grid, row, newRow)
 
 
-def replaceValueAt(arr, index, value):
-    return [value if i == index else v for i, v in enumerate(arr)]
+def replaceValueAt(lst, index, value):
+    return [value if i == index else v for i, v in enumerate(lst)]
+
+
+def allowedValues(grid, square):
+    row, col = square
+    blockedValues = set(chain(
+        rowValues(grid, row),
+        colValues(grid, col),
+        boxValues(grid, boxContaining(square))
+    ))
+    return (v for v in permittedValues.difference(blockedValues))
 
 
 def rowValues(grid, row):
@@ -71,21 +81,10 @@ def boxValues(grid, box):
 
 def boxContaining(square):
     row, col = square
-
-    def boxContainsSquare(box):
+    def squareIn(box):
         (topRow, leftCol), (bottomRow, rightCol) = box
-        return topRow <= row and bottomRow > row and leftCol <= col and rightCol > col
-    return next(box for box in boxes if boxContainsSquare(box))
-
-
-def allowedValues(grid, square):
-    row, col = square
-    blockedValues = set(chain(
-        rowValues(grid, row),
-        colValues(grid, col),
-        boxValues(grid, boxContaining(square))
-    ))
-    return (v for v in permittedValues.difference(blockedValues))
+        return row in range(topRow, bottomRow) and col in range(leftCol, rightCol)
+    return next(box for box in boxes if squareIn(box))
 
 
 puzzle = [
