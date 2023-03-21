@@ -1,7 +1,7 @@
 from itertools import chain
 from math import sqrt, ceil
 
-permittedValues = range(1, 10)
+permittedValues = set(range(1, 10))
 emptySquare = 0
 gridSize = len(permittedValues)
 
@@ -17,7 +17,7 @@ def calcBoxes():
     boxRows, boxCols = calcBoxSize()
     boxTopCorners = [(row, col) for row in range(0, gridSize, boxRows)
                      for col in range(0, gridSize, boxCols)]
-    return [((topRow, leftCol), (topRow + boxRows - 1, leftCol + boxCols - 1))
+    return [((topRow, leftCol), (topRow + boxRows, leftCol + boxCols))
             for topRow, leftCol in boxTopCorners]
 
 
@@ -65,15 +65,17 @@ def colValues(grid, col):
 
 def boxValues(grid, box):
     (topRow, leftCol), (bottomRow, rightCol) = box
-    boxRows = (r[leftCol: rightCol + 1] for r in grid[topRow: bottomRow + 1])
+    boxRows = (r[leftCol:rightCol] for r in grid[topRow:bottomRow])
     return (n for n in chain(*boxRows) if n != emptySquare)
 
 
 def boxContaining(square):
-    def boxContains(box, row, col):
+    row, col = square
+
+    def boxContainsSquare(box):
         (topRow, leftCol), (bottomRow, rightCol) = box
-        return topRow <= row and bottomRow >= row and leftCol <= col and rightCol >= col
-    return next(box for box in boxes if boxContains(box, *square))
+        return topRow <= row and bottomRow > row and leftCol <= col and rightCol > col
+    return next(box for box in boxes if boxContainsSquare(box))
 
 
 def allowedValues(grid, square):
@@ -83,8 +85,7 @@ def allowedValues(grid, square):
         colValues(grid, col),
         boxValues(grid, boxContaining(square))
     ))
-    for v in (n for n in permittedValues if n not in blockedValues):
-        yield v
+    return (v for v in permittedValues.difference(blockedValues))
 
 
 puzzle = [
