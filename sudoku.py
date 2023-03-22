@@ -26,9 +26,9 @@ boxes = calcBoxes()
 
 def solve(grid):
     try:
-        return(s for s in solveAt(grid, next(emptySquares(grid))))
+        yield from solveAt(grid, next(emptySquares(grid)))
     except StopIteration:
-        return (g for g in (grid,))
+        yield grid
 
 
 def emptySquares(grid):
