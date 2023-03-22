@@ -2,12 +2,13 @@ from itertools import chain
 from math import sqrt, ceil
 
 permitted_values = set(range(1, 10))
-if not permitted_values:
-    raise Exception("permitted_values is empty")
 empty_square = 0
+grid_size = len(permitted_values)
+
+if not grid_size:
+    raise Exception("permitted_values is empty")
 if empty_square in permitted_values:
     raise Exception("permitted_values includes the value of empty_square")
-grid_size = len(permitted_values)
 
 
 def calc_box_size():
