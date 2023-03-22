@@ -26,10 +26,9 @@ boxes = calcBoxes()
 
 def solve(grid):
     try:
-        for s in solveAt(grid, next(emptySquares(grid))):
-            yield s
+        return(s for s in solveAt(grid, next(emptySquares(grid))))
     except StopIteration:
-        yield grid
+        return (g for g in (grid,))
 
 
 def emptySquares(grid):
@@ -40,9 +39,8 @@ def emptySquares(grid):
 
 
 def solveAt(grid, square):
-    for value in allowedValues(grid, square):
-        for s in solve(setValueAt(grid, square, value)):
-            yield s
+    return (s for value in allowedValues(grid, square)
+            for s in solve(setValueAt(grid, square, value)))
 
 
 def setValueAt(grid, square, value):
