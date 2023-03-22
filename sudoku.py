@@ -1,91 +1,95 @@
 from itertools import chain
 from math import sqrt, ceil
 
-permittedValues = set(range(1, 10))
-emptySquare = 0
-gridSize = len(permittedValues)
+permitted_values = set(range(1, 10))
+empty_square = 0
+grid_size = len(permitted_values)
 
 
-def calcBoxSize():
-    squareRoot = sqrt(gridSize)
-    def divisorOfGridSize(n):
-        return gridSize % n == 0
-    cols = next(filter(divisorOfGridSize, range(ceil(squareRoot), gridSize)), gridSize)
-    return (gridSize // cols, cols)
+def calc_box_size():
+    square_root = sqrt(grid_size)
+    def divisor_of_grid_size(n):
+        return grid_size % n == 0
+    cols = next(filter(divisor_of_grid_size, range(
+        ceil(square_root), grid_size)), grid_size)
+    return (grid_size // cols, cols)
 
 
-def calcBoxes():
-    boxRows, boxCols = calcBoxSize()
-    boxTopLeftCorners = ((row, col) for row in range(0, gridSize, boxRows)
-                     for col in range(0, gridSize, boxCols))
-    return [((topRow, leftCol), (topRow + boxRows, leftCol + boxCols))
-            for topRow, leftCol in boxTopLeftCorners]
+def calc_boxes():
+    box_rows, box_cols = calc_box_size()
+    box_top_left_corners = ((row, col) for row in range(0, grid_size, box_rows)
+                         for col in range(0, grid_size, box_cols))
+    return [((top_row, left_col), (top_row + box_rows, left_col + box_cols))
+            for top_row, left_col in box_top_left_corners]
 
 
-boxes = calcBoxes()
+boxes = calc_boxes()
 
 
 def solve(grid):
     try:
-        yield from solveAt(grid, next(emptySquares(grid)))
+        yield from solve_at(grid, next(empty_squares(grid)))
     except StopIteration:
         yield grid
 
 
-def emptySquares(grid):
+def empty_squares(grid):
     return ((row, col)
             for row, values in enumerate(grid)
             for col, value in enumerate(values)
-            if value == emptySquare)
+            if value == empty_square)
 
 
-def solveAt(grid, square):
-    return (s for value in allowedValues(grid, square)
-            for s in solve(setValueAt(grid, square, value)))
+def solve_at(grid, square):
+    def solve_using(value):
+        return solve(set_value_at(grid, square, value))
+    return chain(*map(solve_using, allowed_values(grid, square)))
 
 
-def setValueAt(grid, square, value):
+def set_value_at(grid, square, value):
     row, col = square
-    newRow = replaceValueAt(grid[row], col, value)
-    return replaceValueAt(grid, row, newRow)
+    new_row = replace_value_at(grid[row], col, value)
+    return replace_value_at(grid, row, new_row)
 
 
-def replaceValueAt(lst, index, value):
+def replace_value_at(lst, index, value):
     return [value if i == index else v for i, v in enumerate(lst)]
 
 
-def allowedValues(grid, square):
+def allowed_values(grid, square):
     row, col = square
-    blockedValues = set(chain(
-        rowValues(grid, row),
-        colValues(grid, col),
-        boxValues(grid, boxContaining(square))
+    blocked_values = set(chain(
+        row_values(grid, row),
+        col_values(grid, col),
+        box_values(grid, box_containing(square))
     ))
-    yield from permittedValues.difference(blockedValues)
+    return permitted_values.difference(blocked_values)
 
 
-def rowValues(grid, row):
-    return filter(notEmpty, (n for n in grid[row]))
+def row_values(grid, row):
+    return filter(not_empty, grid[row])
 
 
-def colValues(grid, col):
-    return filter(notEmpty, (n for n in (row[col] for row in grid)))
+def col_values(grid, col):
+    return filter(not_empty, (row[col] for row in grid))
 
 
-def boxValues(grid, box):
-    (topRow, leftCol), (bottomRow, rightCol) = box
-    boxRows = (r[leftCol:rightCol] for r in grid[topRow:bottomRow])
-    return filter(notEmpty, chain(*boxRows))
+def box_values(grid, box):
+    (top_row, left_col), (bottom_row, right_col) = box
+    box_rows = (row[left_col:right_col] for row in grid[top_row:bottom_row])
+    return filter(not_empty, chain(*box_rows))
 
-def notEmpty(value):
-    return value != emptySquare
 
-def boxContaining(square):
+def not_empty(value):
+    return value != empty_square
+
+
+def box_containing(square):
     row, col = square
-    def squareIn(box):
-        (topRow, leftCol), (bottomRow, rightCol) = box
-        return row in range(topRow, bottomRow) and col in range(leftCol, rightCol)
-    return next(filter(squareIn, boxes))
+    def contains_square(box):
+        (top_row, left_col), (bottom_row, right_col) = box
+        return row in range(top_row, bottom_row) and col in range(left_col, right_col)
+    return next(filter(contains_square, boxes))
 
 
 puzzle = [
