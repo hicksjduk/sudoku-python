@@ -60,29 +60,31 @@ def allowedValues(grid, square):
         colValues(grid, col),
         boxValues(grid, boxContaining(square))
     ))
-    return (v for v in permittedValues.difference(blockedValues))
+    yield from permittedValues.difference(blockedValues)
 
 
 def rowValues(grid, row):
-    return (n for n in grid[row] if n != emptySquare)
+    return filter(notEmpty, (n for n in grid[row]))
 
 
 def colValues(grid, col):
-    return (n for n in (row[col] for row in grid) if n != emptySquare)
+    return filter(notEmpty, (n for n in (row[col] for row in grid)))
 
 
 def boxValues(grid, box):
     (topRow, leftCol), (bottomRow, rightCol) = box
     boxRows = (r[leftCol:rightCol] for r in grid[topRow:bottomRow])
-    return (n for n in chain(*boxRows) if n != emptySquare)
+    return filter(notEmpty, chain(*boxRows))
 
+def notEmpty(value):
+    return value != emptySquare
 
 def boxContaining(square):
     row, col = square
     def squareIn(box):
         (topRow, leftCol), (bottomRow, rightCol) = box
         return row in range(topRow, bottomRow) and col in range(leftCol, rightCol)
-    return next(box for box in boxes if squareIn(box))
+    return next(filter(squareIn, boxes))
 
 
 puzzle = [
