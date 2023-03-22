@@ -35,18 +35,20 @@ value in the relevant square, and solve the revised grid recursively.
 Note that the structure of the puzzle is not hard-coded throughout the program, but is
 entirely driven by the assignment of two fields at the top of the file:
 
-* `permittedValues`, which is a set containing the values that can validly be
-inserted into a square.
-* `emptySquare`, which is the value that represents an empty square.
+* `permitted_values`, which is a set containing the values that can validly be
+inserted into a square. The size of this also determines the grid size, which is the
+number of squares in each row, column and box.
+* `empty_square`, which is the value that represents an empty square.
 
 By default, these are set respectively to the values 1 to 9 inclusive and 0; but
 different values could be specified to deal with differently-sized puzzles. 
-The only (sensible) constraints on this 
-are that `permittedValues` should not be empty, or contain duplicate values or the value of `emptySquare`.
+The only (sensible) constraints on this (which are validated, and if violated cause
+an exception to be thrown)
+are that `permitted_values` should not be empty, or contain the value of `empty_square`.
 
 The sizes of the boxes within the puzzle are calculated based on the convention that:
 
-* Each box is as nearly square as possible: if the grid size (the number of values in `permittedValues`) is not a square number, the difference between the number of rows and the number of columns is as small as possible.
+* Each box is as nearly square as possible: if the grid size is not a square number, the difference between the number of rows and the number of columns is as small as possible.
 * A box that is not square has more columns than rows.
 
 This implies that in each box, the number of columns is the smallest divisor of the grid size that is not less than its square root, and the number of rows is the grid size divided by the number of columns. It also implies that the grid size should ideally not be a prime number, because that would mean that each box is contiguous with a single row.
