@@ -16,10 +16,10 @@ def calcBoxSize():
 
 def calcBoxes():
     boxRows, boxCols = calcBoxSize()
-    boxTopCorners = ((row, col) for row in range(0, gridSize, boxRows)
+    boxTopLeftCorners = ((row, col) for row in range(0, gridSize, boxRows)
                      for col in range(0, gridSize, boxCols))
     return [((topRow, leftCol), (topRow + boxRows, leftCol + boxCols))
-            for topRow, leftCol in boxTopCorners]
+            for topRow, leftCol in boxTopLeftCorners]
 
 
 boxes = calcBoxes()
