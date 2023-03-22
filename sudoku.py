@@ -109,5 +109,8 @@ puzzle = [
     [0, 9, 0, 0, 0, 0, 4, 0, 0]
 ]
 
+
 if __name__ == "__main__":
-    print(next(solve(puzzle), "No solutions found"))
+    def print_grid(grid):
+        return "\n".join(" ".join(map(str,row)) for row in grid)
+    print(next(map(print_grid, solve(puzzle)), "No solution found"))
