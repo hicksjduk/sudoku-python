@@ -8,8 +8,9 @@ gridSize = len(permittedValues)
 
 def calcBoxSize():
     squareRoot = sqrt(gridSize)
-    cols = next(n for n in range(ceil(squareRoot), gridSize + 1)
-                if gridSize % n == 0)
+    def divisorOfGridSize(n):
+        return gridSize % n == 0
+    cols = next(filter(divisorOfGridSize, range(ceil(squareRoot), gridSize)), gridSize)
     return (gridSize // cols, cols)
 
 
