@@ -7,7 +7,8 @@ claimed in 2012 to be the hardest Sudoku ever devised](https://abcnews.go.com/bl
 
 Alternatively, the `solve` function can be invoked on any puzzle, which is represented by a
 list of lists of integers.
-The input puzzle is not validated, but is assumed to fulfil the following criteria:
+The input puzzle is validated to ensure that it fulfils the following criteria. If any is not fulfilled,
+an exception is thrown.
 
 * it is a grid with nine rows, each of which contains nine columns.
 * every square is either empty (represented by the value 0) or contains one
@@ -42,7 +43,7 @@ number of squares in each row, column and box.
 
 By default, these are set respectively to the values 1 to 9 inclusive and 0; but
 different values could be specified to deal with differently-sized puzzles. 
-The only (sensible) constraints on this (which are validated, and if violated cause
+The only constraints on this (which are validated, and if violated cause
 an exception to be thrown)
 are that `permitted_values` should not be empty, or contain the value of `empty_square`.
 

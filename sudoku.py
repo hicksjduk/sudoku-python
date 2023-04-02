@@ -13,6 +13,7 @@ if empty_square in permitted_values:
 
 def calc_box_size():
     square_root = sqrt(grid_size)
+
     def divisor_of_grid_size(n):
         return grid_size % n == 0
     cols = next(filter(divisor_of_grid_size, range(
@@ -23,7 +24,7 @@ def calc_box_size():
 def calc_boxes():
     box_rows, box_cols = calc_box_size()
     box_top_left_corners = ((row, col) for row in range(0, grid_size, box_rows)
-                         for col in range(0, grid_size, box_cols))
+                            for col in range(0, grid_size, box_cols))
     return [((top_row, left_col), (top_row + box_rows, left_col + box_cols))
             for top_row, left_col in box_top_left_corners]
 
@@ -32,6 +33,30 @@ boxes = calc_boxes()
 
 
 def solve(grid):
+    validate(grid)
+    return solve_valid(grid)
+
+
+def validate(grid):
+    def has_duplicates(seq):
+        return len(seq) != len(set(seq))
+    if len(grid) != grid_size:
+        raise Exception("Wrong number of rows")
+    for row in grid:
+        if len(row) != grid_size:
+            raise Exception("Wrong number of columns")
+        values = [*filter(not_empty, row)]
+        if any(n not in permitted_values for n in values):
+            raise Exception("Invalid value")
+        if has_duplicates(values):
+            raise Exception("Row contains duplicate value(s)")
+    if any(has_duplicates([*col_values(grid, col)]) for col in range(0, grid_size)):
+            raise Exception("Column contains duplicate value(s)")
+    if any(has_duplicates([*box_values(grid, box)]) for box in boxes):
+            raise Exception("Box contains duplicate value(s)")
+
+
+def solve_valid(grid):
     try:
         yield from solve_at(grid, next(empty_squares(grid)))
     except StopIteration:
@@ -47,7 +72,7 @@ def empty_squares(grid):
 
 def solve_at(grid, square):
     def solve_using(value):
-        return solve(set_value_at(grid, square, value))
+        return solve_valid(set_value_at(grid, square, value))
     return chain(*map(solve_using, allowed_values(grid, square)))
 
 
@@ -91,6 +116,7 @@ def not_empty(value):
 
 def box_containing(square):
     row, col = square
+
     def contains_square(box):
         (top_row, left_col), (bottom_row, right_col) = box
         return row in range(top_row, bottom_row) and col in range(left_col, right_col)
@@ -108,7 +134,6 @@ puzzle = [
     [0, 0, 8, 5, 0, 0, 0, 1, 0],
     [0, 9, 0, 0, 0, 0, 4, 0, 0]
 ]
-
 
 if __name__ == "__main__":
     def print_grid(grid):
